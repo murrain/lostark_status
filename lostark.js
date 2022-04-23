@@ -66,18 +66,26 @@ const checkServerStatusDiff = async (url) => {
 	serverStatus.forEach(lastStatus => { 
 		const index = servers.findIndex( newStatus => lastStatus.name.toLowerCase() === newStatus.name.toLowerCase() && lastStatus.status !== newStatus.status)
 		if ( index >= 0 ) {
-			console.log("Status changed for ["+ lastStatus.name +"] ["+ lastStatus.status +"] => ["+ servers[index].status +"]")
+			writeLog("Status changed for ["+ lastStatus.name +"] ["+ lastStatus.status +"] => ["+ servers[index].status +"]")
 		} else {
-			console.log("Status unchanged for ["+ lastStatus.name +"] ["+ lastStatus.status +"]")
+			writeLog("Status unchanged for ["+ lastStatus.name +"] ["+ lastStatus.status +"]")
 		}
 	});
 
 	serverStatus = servers;	
 
-	console.log("Refreshed data");
+	writeLog("Refreshed data");
 
 	return servers;
 };
+
+function writeLog(message) {
+	var time = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString('en-US', { hour12: false,
+                                             hour: "numeric",
+                                             minute: "numeric",
+					     second: "numeric"});
+	console.log(time + " - " + message);
+}
 
 
 /*
@@ -132,5 +140,6 @@ app.get("/:servername", (req,res) => {
                 res.end(JSON.stringify({data: (servers.filter(server => server.name.toLowerCase() === req.params.servername.toLowerCase()))}));
         });
 });
-	
-app.listen(PORT, () => console.log("Express server listening on port " + PORT));
+
+
+app.listen(PORT, () => writeLog("Express server listening on port " + PORT));
