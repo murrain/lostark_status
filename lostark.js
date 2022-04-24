@@ -4,6 +4,7 @@ const http = require('http');
 const express = require('express');
 
 const url = 'https://www.playlostark.com/en-us/support/server-status';
+const UPDATE_FREQUENCY = 240000;
 
 var serverStatus= [];
 var last_check=0;
@@ -121,7 +122,7 @@ app.configure(function() {
 })
 */
 app.get("/", (req,res) => {
-	if (Date.now() - last_check > 300000) { 
+	if (Date.now() - last_check > UPDATE_FREQUENCY + 30000) { 
 		const status_promise = checkServerStatusDiff(url).then(servers => {
                 	res.writeHead(200, {'Content-Type': 'application/json'});
                 	res.end(JSON.stringify({data: (servers)}));
@@ -143,3 +144,7 @@ app.get("/:servername", (req,res) => {
 
 
 app.listen(PORT, () => writeLog("Express server listening on port " + PORT));
+
+setInterval(() => {
+	const status_promise = checkServerStatusDiff(url)
+},UPDATE_FREQUENCY);
